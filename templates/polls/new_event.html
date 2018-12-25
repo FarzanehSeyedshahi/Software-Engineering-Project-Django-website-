@@ -1,0 +1,18 @@
+
+{% extends "polls/basic.html" %}
+
+{% block body %}
+
+{#</form>#}
+{#    {{ forms.formset }}#}
+    <h2 style="margin-left: 20px">Create New Event</h2>
+    <form method="POST" class="post-form" style="width: 550px; padding: 10px; margin-left: 20px; border-style: outset; border-radius: 10px">{% csrf_token %}
+        {{ form.as_p }}
+{#        {{ formset.as_p }}#}
+        <p></p>
+{#        {{ formset }}#}
+
+        <button  class="save btn btn-default" style="margin-left: 20px; background-color: lightcoral ">Cancle</button>
+        <button type="submit" class="save btn btn-default" style="margin-left: 60px; background-color: lightblue ">Save</button>
+    </form>
+{% endblock %}

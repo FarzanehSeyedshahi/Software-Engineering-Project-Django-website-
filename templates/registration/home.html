@@ -1,0 +1,12 @@
+{% extends 'registration/base.html' %}
+
+{% block content %}
+<h1>HOME</h1>
+{#     <a href="{% url 'logout' %}">logout</a>#}
+<h2>Welcome to <em>IPM</em>, Grid Computing Group</h2>
+    <a href="{% url 'editProfile' %}"><h1>Edit Profile</h1></a>
+    <a href="{% url 'Request' %}"><h1>Request</h1></a>
+    <br><a href="{% url 'signup' %}">Sign Up</a></br>
+    <br><a href="{% url 'login' %}">Log in</a></br>
+    <br><a href="{% url 'logout' %}">Log out</a></br>
+{% endblock %}

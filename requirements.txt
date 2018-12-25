@@ -1,0 +1,7 @@
+Django==2.1.4
+django-filter==2.0.0
+django-mssql==1.8
+djangorestframework==3.9.0
+Markdown==3.0.1
+pytz==2018.7
+virtualenv==16.1.0

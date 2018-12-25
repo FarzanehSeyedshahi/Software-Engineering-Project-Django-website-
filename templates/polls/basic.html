@@ -1,0 +1,97 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static '/admin/css/base.css' %}">
+<html lang="en">
+
+<head>
+    <title>List of Polls</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+{#    <link rel="stylesheet" href="./default.css">#}
+{#    {% load static %}<link rel="stylesheet" type="text/css" href="{% static 'default.static' %}">#}
+{#    <link rel="stylesheet" type="text/css" href="static/default.css">#}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+
+
+<style>
+/* Header/Blog Title */
+.header {
+  padding: 10px;
+  text-align: center;
+  background: royalblue;
+  color: whitesmoke;
+}
+
+.header h1 {
+  font-size: 30px;
+}
+
+/* Style the top navigation bar */
+.topnav {
+  overflow: hidden;
+  background-color: cornflowerblue;
+}
+
+/* Style the topnav links */
+.topnav a {
+  float: left;
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+    color: whitesmoke;
+}
+.page{
+    background-color: #609ab6;
+}
+{#.background-nav{#}
+{#    background-color: #79aec8;#}
+{#}#}
+.left-space{
+    margin-left: 30px;
+}
+</style>
+
+{#<div class="container-fluid">#}
+{#    <nav class="navbar-nav-scroll background-nav">#}
+{#      <div class="container-fluid">#}
+{#        <div class="navbar-header">#}
+{#          <span class="navbar-brand">Event polling</span>#}
+{#        </div>#}
+{#        <ul class="nav navbar-nav">#}
+{#        </ul>#}
+{#      </div>#}
+{#    </nav>#}
+{#<br>#}
+{#</div>#}
+
+<div class="header">
+  <h1>Meeting Scheduler Website</h1>
+</div>
+
+<div class="topnav">
+  <a href={% url 'polls:main' %}>home</a>
+</div>
+
+
+{% csrf_token %}
+<head>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" />
+{% block extra_head %}{% endblock %}
+</head>
+
+<body>
+{% block body %}{% endblock %}
+</body>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}js/csrf.js"></script>
+{% block libraries_javascript %}{% endblock %}
+{% block extra_javascript %}{% endblock %}
+</html>

@@ -1,0 +1,20 @@
+
+{% extends "polls/basic.html" %}
+
+{% block body %}
+
+{#</form>#}
+{#    {{ forms.formset }}#}
+    <h2 style="margin-left: 20px">Add option</h2>
+    <form method="POST" class="post-form" style="width: 550px; padding: 10px; margin-left: 20px; border-style: outset; border-radius: 10px">{% csrf_token %}
+        {# {{ form.as_p }} #}
+        {{ formset.as_p }}
+        <p></p>
+        {# {{ formset }} #}
+
+        <button type="submit" class="save btn btn-default" style="margin-left: 60px; background-color: lightblue ">Next Option</button>
+
+    </form>
+    <a href="{% url 'polls:main' %}" class="save btn btn-default" style="margin-left: 20px; background-color: lightcoral ">Finish</a>
+
+{% endblock %}

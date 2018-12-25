@@ -1,0 +1,13 @@
+{% extends "polls/basic.html" %}
+{% block body %}
+{% if latest_event_list %}
+    <ul>
+    {% for event in latest_event_list %}
+         <li><a href="{% url 'polls:detail' event.id %}" methods="post">{{ event.event_name }}</a></li>
+{#        <li> {{ event.id  }}</li>#}
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+{% endblock %}
