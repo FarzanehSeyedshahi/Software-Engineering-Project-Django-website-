@@ -5,39 +5,46 @@ from .models import EventOption
 
 
 class UserForm(forms.ModelForm):
-    password=forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
         model = User
-        fields = ['username','password']
-from django import forms
+        fields = ['username', 'password']
 
 
 class CreateEventForm(forms.ModelForm):
-
     class Meta:
         model = Event
-        fields=('event_name','email_of_creator','description',)
+        fields = ('name', 'description', 'repeating_day')
 
 
 class SignUpForm(forms.ModelForm):
-    #birth_date = forms.DateField(help_text='Required. Format: YYYY-MM-DD')
+    # birth_date = forms.DateField(help_text='Required. Format: YYYY-MM-DD')
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name','username', 'email','password' )
+        fields = ('first_name', 'last_name', 'username', 'email', 'password')
+
 
 class EventOptionForm(forms.ModelForm):
-    event_date = forms.DateField(label='event_date', widget=forms.SelectDateWidget)
-    event_date_from_time = forms.DateField(label='event_date_from_time', widget=forms.SelectDateWidget)
-    event_date_to_time = forms.DateField(label='event_date_to_time', widget=forms.SelectDateWidget)
-    content = forms.DateField(label='content', widget=forms.SelectDateWidget)
-    class Meta:
-        model = EventOption
-        fields = ('event_item_name', 'event_date', 'event_date_from_time', 'event_date_to_time', 'content',
-        'votes')
+    date = forms.DateField(label='date', widget=forms.SelectDateWidget)
 
-class EventForm(forms.ModelForm):
     class Meta:
         model = EventOption
-        fields = ('event','event_item_name', 'event_date', 'event_date_from_time', 'event_date_to_time', 'content','votes' ,)
+        fields = ('description', 'date')
+
+
+class ShowEventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ('name', 'description', 'repeating_day', 'ending_date', 'creator', 'creating_date',)
+
+
+class ShowEventOptionFrom(forms.ModelForm):
+    description = forms.Textarea()
+    date = forms.DateTimeField(label='date', widget=forms.DateTimeField)
+    yes_count = forms.IntegerField(label='yes', widget=forms.IntegerField)
+
+    class Meta:
+        model = EventOption
+        fields = ('description', 'date', 'yes_count',)

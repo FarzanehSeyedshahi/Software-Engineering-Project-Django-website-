@@ -1,9 +1,9 @@
 {% extends "polls/basic.html"  %}
 {% block body %}
-<h1>{{ event.event_name }}</h1>
+<h1>{{ event.name }}</h1>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 <div class="align-left">
-    <form action="{% url 'polls:vote' event.id %}" method="post">
+    <form action="{% url 'polls:main' event.id %}" method="post">
     {% csrf_token %}
     {% for eventoption in event.eventoption_set.all %}
         <input type="radio" name="eventoption" id="eventoption{{ forloop.counter }}" value="{{ eventoption.id }}">
