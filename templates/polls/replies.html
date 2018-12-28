@@ -1,0 +1,29 @@
+{#todo: Amin changes this.#}
+{% extends "polls/basic.html"  %}
+{% block extra_head %}
+    <style>
+        .blue-text{
+            color: #003bff;
+        }
+        .write-comment{
+            width: 42%;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <span class="blue-text">{{ replies.first.commenter.email }}:</span>
+    <span> {{ replies.first.replied_comment.text }}</span><br>
+    {% for reply in replies %}
+        <div class="row">
+            <div class="col-xs-6">
+                <span class="blue-text">{{ reply.commenter.email }}:</span>
+                <span>{{ reply.new_comment.text }}</span>
+            </div>
+        </div>
+    {% endfor %}
+    <form action="{% url 'polls:replies' replies.first.replied_comment.id %}" method="post">{% csrf_token %}
+        <input class="write-comment" type="text" name="comment" placeholder="comment">
+        <input type="submit" value="Comment">
+    </form>
+{% endblock %}
