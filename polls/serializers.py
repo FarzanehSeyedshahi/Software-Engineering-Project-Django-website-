@@ -16,4 +16,4 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class EventSErializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields=('event_name','email_of_creator','description','id')
+        fields=('name','description','id')

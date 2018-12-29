@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 #todo: i changed model.
+=======
+>>>>>>> 226a8d910ca901ee18372faa6937b127fb93b727
 from builtins import bool
 
 from django.db import models
@@ -8,11 +11,19 @@ import datetime
 from django.contrib.auth.models import User
 
 
+<<<<<<< HEAD
 class User(models.Model):
     email = models.EmailField(primary_key = True)
     # event = models.ForeignKey(Event, on_delete=models.CASCADE)
     # time_of_authorization = models.DateTimeField(default=now)
     # event_items = models.ManyToManyField(EventOption)
+=======
+# class User(models.Model):
+#     email = models.EmailField(primary_key = True)
+#     # event = models.ForeignKey(Event, on_delete=models.CASCADE)
+#     time_of_authorization = models.DateTimeField(default=now)
+#     # event_items = models.ManyToManyField(EventOption)
+>>>>>>> 226a8d910ca901ee18372faa6937b127fb93b727
 
 class Event(models.Model):
     name = models.CharField(max_length=200)
@@ -23,6 +34,10 @@ class Event(models.Model):
     holding_date_from = models.DateTimeField()
     ending_date = models.DateTimeField(blank=True)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 226a8d910ca901ee18372faa6937b127fb93b727
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     creating_date = models.DateTimeField(default=now)
 

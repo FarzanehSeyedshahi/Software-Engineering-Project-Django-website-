@@ -24,10 +24,9 @@ class EventModelTests(TestCase):
         self.client = Client()
 
 
-    def create_event(self, event_name):
+    def create_event(self, name):
         event = Event(
-                    event_name=event_name,
-                    email_of_creator="test@test.com", description="test Event")
+                    name=name, description="test Event")
         event.save()
         return event
 
@@ -45,7 +44,7 @@ class EventModelTests(TestCase):
     def test_index_show_polls(self):
         self.create_event("Night Meeting")
         response = self.client.get('/polls/')
-        # self.assertEqual(response.context['latest_event_list'][0].event_name, "Night Meeting", "test_index_show_polls, event")
+        # self.assertEqual(response.context['latest_event_list'][0].name, "Night Meeting", "test_index_show_polls, event")
         self.assertEqual(response.status_code, 200, "Test show Poll Detail, status code")
 
 

@@ -1,12 +1,12 @@
 {% extends "polls/basic.html" %}
 {% block body %}
 
-<h1>{{ event.event_name }}</h1>
+<h1>{{ event.name }}</h1>
  {{ event }}
 <ul>
     {{ event }}
 {% for eventOption in event.eventoption_set.all %}
-    <li>{{ eventOption.event_item_name }} -- {{ eventOption.votes }} vote{{ eventOption.votes|pluralize }}</li>
+    <li>{{ eventOption.event }} -- {{ eventOption.description }} vote{{ eventOption.yes_count|pluralize }}</li>
 {% endfor %}
 </ul>
 
