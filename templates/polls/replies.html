@@ -12,18 +12,40 @@
 {% endblock %}
 
 {% block body %}
-    <span class="blue-text">{{ replies.first.commenter.email }}:</span>
-    <span> {{ replies.first.replied_comment.text }}</span><br>
-    {% for reply in replies %}
-        <div class="row">
+
+
+    <div class="row">
+        {% if replies %}
             <div class="col-xs-6">
-                <span class="blue-text">{{ reply.commenter.email }}:</span>
-                <span>{{ reply.new_comment.text }}</span>
+                <span class="blue-text">{{ replies.first.commenter.email }}:</span>
+                <span> {{ replies.first.replied_comment.text }}</span><br>
             </div>
-        </div>
-    {% endfor %}
-    <form action="{% url 'polls:replies' replies.first.replied_comment.id %}" method="post">{% csrf_token %}
+        {% else %}
+            <div class="col-xs-6">
+                <span class="blue-text">{{ comment.commenter.email }}: </span>
+                <span>{{ comment.text }}</span>
+            </div>
+        {% endif %}
+    </div>
+    
+    {% if replies %}
+        {% for reply in replies %}
+            <div class="row">
+                <div class="col-xs-6">
+                    <span class="blue-text">{{ reply.commenter.email }}:</span>
+                    <span>{{ reply.new_comment.text }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if replies %}
+        <form action="{% url 'polls:replies' replies.first.id %}" method="post">{% csrf_token %}
+    {% else %}
+        <form action="{% url 'polls:replies' comment.id %}" method="post">{% csrf_token %}
+    {% endif %}
         <input class="write-comment" type="text" name="comment" placeholder="comment">
         <input type="submit" value="Comment">
     </form>
+
 {% endblock %}

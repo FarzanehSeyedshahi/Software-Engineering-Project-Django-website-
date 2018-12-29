@@ -25,7 +25,9 @@
 {% endblock %}
 
 {% block body %}
-        {% for comment in comments %}
+
+    {% if event_option.comment_set.all %}
+        {% for comment in event_option.comment_set.all %}
             <div class="row">
                 <div class="col-xs-6">
                     <span class="blue-text">{{ comment.commenter.email }}: </span>
@@ -34,10 +36,14 @@
                 </div>
             </div>
         {% endfor %}
-        <br>
-        <form action="{% url 'polls:writecomment' comments.first.event_option.id %}" method="post">
-        {% csrf_token %}
+     <br>
+    {% else %}
+        <p>No Comments yet.</p>
+    {% endif %}
+
+        <form action="{% url 'polls:writecomment' event_option.id %}" method="post">{% csrf_token %}
             <input class="write-comment" type="text" name="comment" placeholder="comment">
             <input type="submit" value="Comment">
         </form>
+
 {% endblock %}

@@ -56,8 +56,11 @@ def vote(request, id):
 def comments(request, option_id):
     event_option = get_object_or_404(EventOption, id=option_id)
     comments = Comment.objects.filter(event_option=event_option)
-    context = {'comments': comments}
-    return render(request, 'polls/comments.html', context)
+    # if not comments:
+    return render(request, 'polls/comments.html', {'event_option': event_option})
+    # else:
+    #     context = {'comments': comments}
+    #     return render(request, 'polls/comments.html', context)
 
 
 def add_comment_to_model(text, event_option, user):
@@ -84,19 +87,20 @@ def replies(request, comment_id):  # todo: user should handled and comment_id fo
         user = get_object_or_404(User, email="amin@gmail.com")  # todo amin@gmail.com
         save_reply_to_model(text, replied_comment.event_option, user, replied_comment)
     replies = ReplyComment.objects.filter(replied_comment=replied_comment)
-    context = {'replies': replies}
+    if replies:
+        context = {'replies': replies}
+    else:
+        comment = get_object_or_404(Comment, id=comment_id)
+        context = {'comment': comment}
     return render(request, 'polls/replies.html', context)
 
 
 def save_comment(request, comment_id):  # todo: user should handled, and url not set to comments.html, and not show replies comment.
     text = request.POST['comment']
-    comment = get_object_or_404(Comment, id=comment_id)
-    comments = Comment.objects.filter(event_option=comment.event_option)
+    event_option = get_object_or_404(EventOption, id=comment_id)#
     user = get_object_or_404(User, email="amin@gmail.com")  # todo amin@gmail.com
-    add_comment_to_model(text, comments[0].event_option, user)
-    event_option = get_object_or_404(EventOption, id=comment.event_option.id)
-    comments = Comment.objects.filter(event_option=event_option)
-    context = {'comments': comments}
+    add_comment_to_model(text, event_option, user)
+    context = {'event_option': event_option}
     return render(request, 'polls/comments.html', context)
 
 
@@ -106,7 +110,7 @@ def results(request,id):
 
 
 def new_event(request):
-    return render(request,'polls/new_event.html')
+    return render(request, 'polls/new_event.html')
 
 
 def create_new_event(request):
