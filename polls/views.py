@@ -2,10 +2,12 @@ from django.urls import reverse
 from .forms import SignUpForm,CreateEventForm, EventOptionForm
 from django.shortcuts import render, redirect
 from django.shortcuts import render_to_response, get_object_or_404, render
-from django.http import  HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from .models import Event,EventOption, Comment, ReplyComment, User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+
 
 
 def main(request):
@@ -86,8 +88,7 @@ def replies(request, comment_id):  # todo: user should handled and comment_id fo
     return render(request, 'polls/replies.html', context)
 
 
-def save_comment(request,
-                 comment_id):  # todo: user should handled, and url not set to comments.html, and not show replies comment.
+def save_comment(request, comment_id):  # todo: user should handled, and url not set to comments.html, and not show replies comment.
     text = request.POST['comment']
     comment = get_object_or_404(Comment, id=comment_id)
     comments = Comment.objects.filter(event_option=comment.event_option)
