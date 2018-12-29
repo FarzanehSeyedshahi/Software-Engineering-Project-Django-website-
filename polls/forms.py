@@ -25,17 +25,10 @@ class SignUpForm(forms.ModelForm):
         model = User
         fields = ('first_name', 'last_name', 'username', 'email', 'password')
 
-<<<<<<< HEAD
-
-class CreateEventOptionForm(forms.ModelForm):
-    date = forms.DateField(label='date', widget=forms.SelectDateWidget)
-
-=======
 
 class EventOptionForm(forms.ModelForm):
     date = forms.DateField(label='date', widget=forms.SelectDateWidget)
 
->>>>>>> 226a8d910ca901ee18372faa6937b127fb93b727
     class Meta:
         model = EventOption
         fields = ('description', 'date')
@@ -54,8 +47,4 @@ class ShowEventOptionFrom(forms.ModelForm):
 
     class Meta:
         model = EventOption
-<<<<<<< HEAD
         fields = ('description', 'date', 'yes_count',)
-=======
-        fields = ('description', 'date', 'yes_count',)
->>>>>>> 226a8d910ca901ee18372faa6937b127fb93b727
