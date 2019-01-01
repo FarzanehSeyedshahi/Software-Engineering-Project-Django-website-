@@ -1,14 +1,52 @@
 {% extends "polls/basic.html"  %}
+{% block extra_head %}
+    {% load static %}
+    <style>
+        .bigger-line-space{
+            margin: 2px 0 2px 0;
+        }
+        .black-text{
+            color: #000000;
+        }
+        .Yes{
+            {#border: purple 1px solid;#}
+            background-color: #47fc00;
+        }
+        .No{
+            {#border: purple 1px solid;#}
+            background-color: #ff5042;
+        }
+        .Maybe{
+            background-color: #ffca00;
+        }
+
+    </style>
+{% endblock %}
+
 {% block body %}
-<h1>{{ event.name }}</h1>
+<h1>{{ event.event_name }}</h1>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 <div class="align-left">
-    <form action="{% url 'polls:main' event.id %}" method="post">
+    <form action="{% url 'polls:vote' event.id %}" method="post">
     {% csrf_token %}
+
     {% for eventoption in event.eventoption_set.all %}
-        <input type="radio" name="eventoption" id="eventoption{{ forloop.counter }}" value="{{ eventoption.id }}">
-        <label for="eventoption{{ forloop.counter }}">{{ eventoption.event_item_name }}</label><br>
+        <label class="bigger-line-space" for="eventoption{{ forloop.counter }}">{{ eventoption.description }}: </label>
+
+        {% with 'Yes No Maybe' as option_list %}
+
+            {% for option in option_list.split %}
+                <span class="{{ option }} badge black-text">
+                    <input type="radio" name="eventoption{{ eventoption.id }}" id="eventoption{{ eventoption.id }}" value="{{ forloop.counter }}">
+                    <label for="eventoption{{ forloop.counter }}">{{ option }}</label>
+                </span>
+            {% endfor %}
+            <a href="{% url 'polls:comments' eventoption.id %}">comments</a>
+
+            <br>
+        {% endwith %}
     {% endfor %}
+
     <input type="submit" value="Vote">
     </form>
 </div>

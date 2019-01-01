@@ -15,8 +15,11 @@ urlpatterns = [
     # url('^(?P<pk>[0-9]+)/', )
     path('<int:id>/', views.detail, name='detail'),
     path('<int:id>/results/', views.results, name='results'),
-    # path('<int:id>/vote/', views.vote, name='vote'),
-    #url(r'^api-auth/', include('rest_framework.urls')),
+    path('<int:id>/vote/', views.vote, name='vote'),
+    path('<int:option_id>/comments/', views.comments, name='comments'),
+    path('<int:comment_id>/writecomment/', views.save_comment, name='writecomment'),
+    path('<int:comment_id>/replies/', views.replies, name='replies'),
+    # url(r'^api-auth/', include('rest_framework.urls')),
     #path('login/', include('django.contrib.auth.urls'),name='login'),
     url(r'^signup/$', views.signup_view, name='signup'),
 

@@ -4,7 +4,7 @@
     <ul>
     {% for event in latest_event_list %}
          <li><a href="{% url 'polls:detail' event.id %}" methods="post">{{ event.name }}</a></li>
-{#        <li> {{ event.id  }}</li>#}
+{#          <li> {{ event.id  }}</li>#}
     {% endfor %}
     </ul>
 {% else %}

@@ -1,0 +1,49 @@
+{% extends "polls/basic.html"  %}
+
+{% block extra_head %}
+    <style>
+        .write-comment{
+            width: 42%;
+        }
+        .blue-text{
+            color: #003bff;
+        }
+        .comment-block{
+            width: 50%;
+        }
+        .hidden-block{
+            display: none;
+        }
+    </style>
+    <script>
+        $(document).ready(function(){
+          $(".reply").click(function(){
+            $(".reply-block").show();
+          });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    {% if event_option.comment_set.all %}
+        {% for comment in event_option.comment_set.all %}
+            <div class="row">
+                <div class="col-xs-6">
+                    <span class="blue-text">{{ comment.commenter.email }}: </span>
+                    <span>{{ comment.text }}</span>
+                    <a href="{% url 'polls:replies' comment.id %}">(replies)</a>
+                </div>
+            </div>
+        {% endfor %}
+     <br>
+    {% else %}
+        <p>No Comments yet.</p>
+    {% endif %}
+
+        <form action="{% url 'polls:writecomment' event_option.id %}" method="post">{% csrf_token %}
+            <input class="write-comment" type="text" name="comment" placeholder="comment">
+            <input type="submit" value="Comment">
+        </form>
+
+{% endblock %}

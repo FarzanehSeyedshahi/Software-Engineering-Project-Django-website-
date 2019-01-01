@@ -9,9 +9,9 @@ from django.contrib.auth.models import User
 
 # class User(models.Model):
 #     email = models.EmailField(primary_key = True)
-#     # event = models.ForeignKey(Event, on_delete=models.CASCADE)
-#     time_of_authorization = models.DateTimeField(default=now)
-#     # event_items = models.ManyToManyField(EventOption)
+    # event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    # time_of_authorization = models.DateTimeField(default=now)
+    # event_items = models.ManyToManyField(EventOption)
 
 class Event(models.Model):
     name = models.CharField(max_length=200)

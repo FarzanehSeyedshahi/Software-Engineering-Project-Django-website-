@@ -8,6 +8,11 @@ from django.contrib.auth.forms import AuthenticationForm,UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import (authenticate, get_user_model, login,logout)
+from django.http import HttpResponseRedirect
+from .models import Event,EventOption, Comment, ReplyComment, User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 @login_required
 def main(request):
@@ -23,31 +28,86 @@ def detail(request, id):
     event = get_object_or_404(Event, pk=id)
     return render(request, 'polls/detail.html', {'event': event})
 
-
-# def vote(request, id):
-#     event = get_object_or_404(Event, pk=id)
-#     if request.POST:
-#         try:
-#             selected_eventOption = event.eventoption_set.get(pk=request.POST['eventoption'])
-#             selected_eventOption.votes += 1
-#             selected_eventOption.save()
-#             return HttpResponseRedirect(reverse('polls:results', args=(event.id,)))
-#
-#         except (KeyError, EventOption.DoesNotExist):
-#         # Redisplay the question voting form.
-#             return render(request, 'polls/detail.html', {
-#             'event': event,
-#             'error_message': "You didn't select a choice.",
-#             })
-#     else:
-#         return render(request, 'polls/detail.html',{'event':event})
+def save_vote(choose_option, event_options, i):
+    if choose_option == '1':
+        event_options[i].yes_count += 1
+    elif choose_option == '2':
+        event_options[i].no_count += 1
+    else:
+        event_options[i].maybe_count += 1
+    event_options[i].save()
 
 
+def vote(request, id):
+    event = get_object_or_404(Event, pk=id)
+    event_options = EventOption.objects.all().filter(event=event)
 
-            # Always return an HttpResponseRedirect after successfully dealing
-            # with POST data. This prevents data from being posted twice if a
-            # user hits the Back button.
+    all_field_empty = True
+    for i in range(len(event_options)):
+        event_option_id = 'eventoption' + str(i + 1)
+        if request.POST.get(event_option_id, False):
+            all_field_empty = False
+            choose_option = request.POST[event_option_id]
+            save_vote(choose_option, event_options, i)
+    if not all_field_empty:
+        return HttpResponseRedirect(reverse('polls:results', args=(event.id,)))
+    else:
+        return render(request, 'polls/detail.html', {
+            'event': event,
+            'error_message': "You didn't select a choice.",
+        })
 
+
+def comments(request, option_id):
+    event_option = get_object_or_404(EventOption, id=option_id)
+    comments = Comment.objects.filter(event_option=event_option)
+    # if not comments:
+    return render(request, 'polls/comments.html', {'event_option': event_option})
+    # else:
+    #     context = {'comments': comments}
+    #     return render(request, 'polls/comments.html', context)
+
+
+def add_comment_to_model(text, event_option, user):
+    comment = Comment(
+        text=text, event_option=event_option,
+        commenter=user
+    )
+    comment.save()
+    return comment
+
+
+def save_reply_to_model(text, event_option, user, replied_comment):
+    comment = add_comment_to_model(text, event_option, user)
+    reply_comment = ReplyComment(
+        commenter=user, new_comment=comment, replied_comment=replied_comment
+    )
+    reply_comment.save()
+
+
+def replies(request, comment_id):  # todo: user should handled and comment_id for comment_event_option.
+    replied_comment = get_object_or_404(Comment, id=comment_id)
+    if request.POST:
+        text = request.POST['comment']
+        user = get_object_or_404(User, email="farzaneh@gmail.com")  # todo amin@gmail.com
+        save_reply_to_model(text, replied_comment.event_option, user, replied_comment)
+    replies = ReplyComment.objects.filter(replied_comment=replied_comment)
+    if replies:
+        context = {'replies': replies}
+    else:
+        comment = get_object_or_404(Comment, id=comment_id)
+        context = {'comment': comment}
+    return render(request, 'polls/replies.html', context)
+
+
+def save_comment(request, comment_id):  # todo: user should handled, and url not set to comments.html, and not show replies comment.
+    text = request.POST['comment']
+    print ('HI')
+    event_option = get_object_or_404(EventOption, id=comment_id)#
+    user = get_object_or_404(User, email="farzaneh@gmail.com")  # todo amin@gmail.com
+    add_comment_to_model(text, event_option, user)
+    context = {'event_option': event_option}
+    return render(request, 'polls/comments.html', context)
 
 
 def results(request,id):
@@ -56,7 +116,7 @@ def results(request,id):
 
 
 def new_event(request):
-    return render(request,'polls/new_event.html')
+    return render(request, 'polls/new_event.html')
 
 
 def create_new_event(request):
