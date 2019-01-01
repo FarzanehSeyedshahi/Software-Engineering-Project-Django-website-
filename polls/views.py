@@ -1,13 +1,15 @@
 from django.urls import reverse
-from .forms import SignUpForm,CreateEventForm, EventOptionForm
+from .forms import UserLoginForm,UserRegisterForm,CreateEventForm, EventOptionForm
 from django.shortcuts import render, redirect
 from django.shortcuts import render_to_response, get_object_or_404, render
 from django.http import  HttpResponseRedirect
 from .models import Event,EventOption
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import AuthenticationForm,UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import views as auth_views
+from django.contrib.auth import (authenticate, get_user_model, login,logout)
 
-
+@login_required
 def main(request):
     return render(request,'polls/main.html')
 
@@ -60,16 +62,12 @@ def new_event(request):
 def create_new_event(request):
     if request.method == 'POST':
         form = CreateEventForm(request.POST)
-        #formset = EventForm(request.POST)
         if [form.is_valid()]:
             event = form.save()
-            #formset_ = formset.save()
             event.save()
-            #formset_.save()
             return redirect('polls:add_option')
     else:
         form = CreateEventForm()
-        #formset =EventOption()
         return render(request, 'polls/new_event.html', {'form': form})
 
 def add_option(request):
@@ -84,33 +82,81 @@ def add_option(request):
         return render(request, 'polls/addoption.html', {'formset': formset})
 
 
-def signup(request,template_name, next_page):
+# def signup(request,template_name, next_page):
+#     if request.method == 'POST':
+#         form = SignUpForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+#             user.refresh_from_db()  # load the profile instance created by the signal
+#             user.save()
+#             raw_password = form.cleaned_data.get('password1')
+#             user = authenticate(username=user.username, password=raw_password)
+#             login(request, user)
+#             return redirect('polls:main')
+#     else:
+#         form = SignUpForm()
+#     return render(request, 'registration/signup.html', {'form': form})
+
+
+# def login_view (request):
+#     username = request.POST['username']
+#     password = request.POST['password']
+#     user = authenticate(request, username=username, password=password)
+#     if user is not None:
+#         login(request, user)
+#         redirect('polls:main')
+#     else:
+#         print('invalid Login')
+#
+# def logout_view(request):
+#     logout(request)
+#     redirect('polls:rest_framework:login')
+
+def signup_view(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            user.refresh_from_db()  # load the profile instance created by the signal
-            user.save()
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=user.username, password=raw_password)
-            login(request, user)
+            form.save()
             return redirect('polls:main')
     else:
-        form = SignUpForm()
-    return render(request, 'registration/signup.html', {'form': form})
+        form = UserCreationForm()
+    return render(request,'registration/signup.html',{'form':form})
 
-
-def login_view (request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
+def login_view(request):
+    next = request.GET.get('next')
+    form = UserLoginForm(request.POST or None)
+    if form.is_valid():
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password')
+        user = authenticate(username= username, password = password)
         login(request, user)
-        redirect('polls:main')
-    else:
-        print('invalid Login')
+        if next:
+            return redirect(next)
+        return redirect("/")
+    context = {
+        'form': form,
+    }
+    return render(request, "registration/login.html", context)
+
+def register_view(request):
+    next = request.GET.get('next')
+    form = UserRegisterForm(request.POST or None)
+    if form.is_valid():
+        user = form.save(commit=False)
+        password = form.cleaned_data.get('password')
+        user.set_password(password)
+        user.save()
+        new_user = authenticate(username= user.username, password = password)
+        login(request, new_user)
+        if next:
+            return redirect(next)
+        return redirect("/")
+    context = {
+        'form': form,
+    }
+    return render(request, "registration/signup.html", context)
 
 def logout_view(request):
     logout(request)
-    redirect('polls:rest_framework:login')
+    return redirect('/')

@@ -75,6 +75,7 @@
 </div>
 
 <div class="topnav">
+    <p class="pt-3"><strong>{{ user.username }}</strong> <a href="{% url 'logout' %}">Log out</a></p>
   <a href={% url 'polls:main' %}>home</a>
 </div>
 
