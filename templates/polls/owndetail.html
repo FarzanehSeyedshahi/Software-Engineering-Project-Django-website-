@@ -1,4 +1,5 @@
-{% extends "polls/basic.html"  %}
+{% extends "polls/basic.html" %}
+
 {% block extra_head %}
     {% load static %}
     <style>
@@ -23,22 +24,31 @@
     </style>
 {% endblock %}
 
+
 {% block body %}
-<h1>{{ event.event_name }}</h1>
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-<div class="align-left">
-    <form action="{% url 'polls:vote' event.id %}" method="post">
-    {% csrf_token %}
+
+    <h1>{{ event.event_name }}</h1>
+
+    <div class="align-left">
 
     {% for eventoption in event.eventoption_set.all %}
-        <label class="bigger-line-space" for="eventoption{{ forloop.counter }}">{{ eventoption.description }}: </label>
+        <span class="bigger-line-space" for="eventoption{{ forloop.counter }}">{{ eventoption.description }}: </span>
 
         {% with 'Yes No Maybe' as option_list %}
 
             {% for option in option_list.split %}
                 <span class="{{ option }} badge black-text">
-                    <input type="radio" name="eventoption{{ eventoption.id }}" id="eventoption{{ eventoption.id }}" value="{{ forloop.counter }}">
-                    <label for="eventoption{{ forloop.counter }}">{{ option }}</label>
+                {% if forloop.counter == 1 %}
+                    <span>{{ eventoption.yes_count }}</span>
+                {% elif forloop.counter == 2 %}
+                    <span>{{ eventoption.no_count }}</span>
+                {% else %}
+                    <span>{{ eventoption.maybe_count }}</span>
+                {% endif %}
+{#                    <span>{{ eventoption.no_count }}</span>#}
+{#                    <span>{{ eventoption.maybe_count }}</span>#}
+{#                    <input type="radio" name="eventoption{{ eventoption.id }}" id="eventoption{{ eventoption.id }}" value="{{ forloop.counter }}">#}
+                    <span for="eventoption{{ forloop.counter }}">{{ option }}</span>
                 </span>
             {% endfor %}
             <a href="{% url 'polls:comments' eventoption.id %}">comments</a>
@@ -47,7 +57,6 @@
         {% endwith %}
     {% endfor %}
 
-    <input type="submit" value="Vote">
-        </form>
 </div>
+
 {% endblock %}

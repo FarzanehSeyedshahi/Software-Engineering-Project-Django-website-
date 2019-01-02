@@ -12,9 +12,10 @@
         <p></p>
         {# {{ formset }} #}
 
-        <button type="submit" class="save btn btn-default" style="margin-left: 60px; background-color: lightblue ">Next Option</button>
+        <button type="submit" class="save btn btn-default" style="margin-left: 60px; background-color: lightblue ">Save and add another</button>
 
     </form>
-    <a href="{% url 'polls:main' %}" class="save btn btn-default" style="margin-left: 20px; background-color: lightcoral ">Finish</a>
+{#    <a href="{% url 'polls:main' %}" class="save btn btn-default" style="margin-left: 20px; background-color: lightcoral ">Save</a>#}
+    <a href="{% url 'polls:participate' event.id %}" class="save btn btn-default" style="margin-left: 20px; background-color: lightcoral ">Save</a>
 
 {% endblock %}

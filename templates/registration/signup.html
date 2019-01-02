@@ -20,11 +20,36 @@
 {#  </form>#}
 {#{% endblock %}#}
 
+
 {% block content %}
-    <h1>Sign Up</h1>
+    <style>
+        .topnav {
+          overflow: hidden;
+          background-color: cornflowerblue;
+        }
+
+        /* Style the topnav links */
+        .topnav a {
+          float: left;
+          display: block;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+          color: whitesmoke;
+        }
+    </style>
+
+    <div class="header">
+        <h1>AS-IS Meeting Scheduler Website</h1>
+    </div>
+
+    <div class="topnav">
+        <p style="font-size: 25px; text-align: left; padding: 15px; color: whitesmoke">Sign Up</p>
+    </div><br>
+
     <form method="post">
         {% csrf_token %}
         {{ form }}
-        <input type="submit" value="Sign Up">
+        <br><br><input type="submit" value="Sign Up">
     </form>
 {% endblock %}

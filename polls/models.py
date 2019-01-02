@@ -9,19 +9,20 @@ from django.contrib.auth.models import User
 
 # class User(models.Model):
 #     email = models.EmailField(primary_key = True)
-    # event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    # time_of_authorization = models.DateTimeField(default=now)
-    # event_items = models.ManyToManyField(EventOption)
+# event = models.ForeignKey(Event, on_delete=models.CASCADE)
+# time_of_authorization = models.DateTimeField(default=now)
+# event_items = models.ManyToManyField(EventOption)
 
 class Event(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
     repeating_day = models.IntegerField(default=0)
     active_status = models.BooleanField(default=1)
-    holding_date_to = models.DateTimeField()
-    holding_date_from = models.DateTimeField()
-    ending_date = models.DateTimeField(blank=True)
-
+    holding_date_to = models.DateField(null=True)
+    holding_time_to = models.TimeField(null=True)
+    holding_date_from = models.DateField(null=True)
+    holding_time_from = models.TimeField(null=True)
+    ending_date = models.DateField(null=True)
 
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     creating_date = models.DateTimeField(default=now)
@@ -42,8 +43,10 @@ class EventOption(models.Model):
     maybe_count = models.IntegerField(default=0)
     has_chosen = models.BooleanField(default=0)
     description = models.TextField()
-    from_date = models.DateTimeField()
-    to_date = models.DateTimeField()
+    from_date = models.DateField()
+    from_time = models.TimeField()
+    to_date = models.DateField()
+    to_time = models.TimeField()
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     class Meta:
@@ -54,11 +57,11 @@ class EventOption(models.Model):
 
 
 class ParticipateIn(models.Model):
-    participant = models.ForeignKey(User, on_delete=models.CASCADE)
+    participant_email = models.EmailField()
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ("event", "participant", "id")
+        unique_together = ("event", "participant_email", "id")
 
 
 class Comment(models.Model):
@@ -79,36 +82,22 @@ class ReplyComment(models.Model):
     class Meta:
         unique_together = ("new_comment", "commenter", "replied_comment", "id")
 
-# class Event(models.Model):
-#     event_name = models.CharField(max_length=200)
-#     email_of_creator = models.EmailField()
-#     description = models.TextField()
-#     # id = models.CharField(max_length=50, primary_key=True)
-#
-#     def __str__(self):
-#         return self.event_name
-#
-#     def was_published_recently(self):
-#         return self.pub_date >= now - datetime.timedelta(days=1)
-#
-#
-# class EventOption(models.Model):
-#     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-#     event_item_name = models.CharField(max_length=100)
-#     event_date=models.DateField('day')
-#     event_date_from_time=models.DateTimeField('From')
-#     event_date_to_time = models.DateTimeField('To')
-#     content = models.DateTimeField()
-#     votes = models.IntegerField(default=0)
-#     #votes_sofar = models.IntegerField(votes)
-#
-#     def __str__(self):
-#         return self.event_item_name
-#
-# class Participant(models.Model):
-#     name = models.CharField(max_length=100)
-#     event = models.ForeignKey(Event,  on_delete=models.CASCADE)
-#     time_of_authorization = models.DateTimeField(default=now)
-#     event_items = models.ManyToManyField(EventOption)
 
-# Create your models here.
+class BusyDate(models.Model):
+    event_name = models.CharField(max_length=200)
+    event_from_date = models.DateField()
+    event_from_time = models.TimeField()
+    event_to_date = models.DateField()
+    event_to_time = models.TimeField()
+
+    class Meta:
+        unique_together = ("event_from_date", "event_from_time", "event_to_date", "event_to_time", "id")
+
+    def check_overlap(self, from_date, from_time, to_date, to_time):
+        if (self.event_from_date < from_date < self.event_to_date) or (
+                self.event_from_date < to_date < self.event_to_date):
+            if (self.event_from_time < from_time < self.event_to_time) or (
+                    self.event_from_time < to_time < self.event_to_time):
+                return True
+        else:
+            return False

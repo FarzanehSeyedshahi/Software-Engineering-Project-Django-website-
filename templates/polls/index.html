@@ -1,9 +1,17 @@
 {% extends "polls/basic.html" %}
+
 {% block body %}
-{% if latest_event_list %}
+{% if events %}
     <ul>
-    {% for event in latest_event_list %}
-         <li><a href="{% url 'polls:detail' event.id %}" methods="post">{{ event.name }}</a></li>
+    {% for event in events %}
+         {% if event.name %}
+             <li><a href="{% url 'polls:owndetail' event.id %}" methods="post">{% comment %}{% endcomment %}
+             {{ event.name }}
+         {% else %}
+             <li><a href="{% url 'polls:detail' event.event.id %}" methods="post">
+             {{ event.event.name }}
+         {% endif %}
+             </a></li>
 {#          <li> {{ event.id  }}</li>#}
     {% endfor %}
     </ul>

@@ -9,19 +9,41 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import (authenticate, get_user_model, login,logout)
 from django.http import HttpResponseRedirect
-from .models import Event,EventOption, Comment, ReplyComment, User
+from .models import Event,EventOption, Comment, ReplyComment, ParticipateIn
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
+
 
 @login_required
 def main(request):
-    return render(request,'polls/main.html')
+    # user = User()
+    # event = get_object_or_404(Event, id=1)
+    # print(event.creator.email)
+    return render(request, 'polls/main.html')
 
 def event(request):
-    latest_event_list = Event.objects.order_by('name')[:15]
-    context = {'latest_event_list': latest_event_list}
+    events = ParticipateIn.objects.filter(participant_email=request.user.email) #todo: change this name
+    # latest_event_list = Event.objects.order_by('name')[:15]
+    # print("**", latest_event_list[0].event.name)
+    context = {'events': events}
+    print(len(events))
     return render(request, 'polls/index.html', context)
+
+def own_event(request):
+    print("***")
+    creator_user = User.objects.get(username=request.user.username)
+    events = Event.objects.filter(creator=creator_user) #todo: change this name
+    context = {'events': events}
+    # print(events[0])
+    return render(request, 'polls/index.html', context)
+
+
+def own_detail(request, event_id):
+    event = get_object_or_404(Event, pk=event_id)
+    return render(request, 'polls/owndetail.html', {'event': event})
+
 
 
 def detail(request, id):
@@ -85,11 +107,12 @@ def save_reply_to_model(text, event_option, user, replied_comment):
     reply_comment.save()
 
 
+#todo: request.user.email
 def replies(request, comment_id):  # todo: user should handled and comment_id for comment_event_option.
     replied_comment = get_object_or_404(Comment, id=comment_id)
     if request.POST:
         text = request.POST['comment']
-        user = get_object_or_404(User, email="farzaneh@gmail.com")  # todo amin@gmail.com
+        user = get_object_or_404(User, email=request.user.email)  # todo amin@gmail.com
         save_reply_to_model(text, replied_comment.event_option, user, replied_comment)
     replies = ReplyComment.objects.filter(replied_comment=replied_comment)
     if replies:
@@ -100,11 +123,12 @@ def replies(request, comment_id):  # todo: user should handled and comment_id fo
     return render(request, 'polls/replies.html', context)
 
 
+#todo: request.user.email
 def save_comment(request, comment_id):  # todo: user should handled, and url not set to comments.html, and not show replies comment.
     text = request.POST['comment']
     print ('HI')
-    event_option = get_object_or_404(EventOption, id=comment_id)#
-    user = get_object_or_404(User, email="farzaneh@gmail.com")  # todo amin@gmail.com
+    event_option = get_object_or_404(EventOption, id=comment_id)
+    user = get_object_or_404(User, email=request.user.email)  # todo amin@gmail.com
     add_comment_to_model(text, event_option, user)
     context = {'event_option': event_option}
     return render(request, 'polls/comments.html', context)
@@ -123,23 +147,81 @@ def create_new_event(request):
     if request.method == 'POST':
         form = CreateEventForm(request.POST)
         if [form.is_valid()]:
-            event = form.save()
+            event = form.save(commit=False)
+            user = User.objects.get(username=request.user.username)
+            event.creator = user
             event.save()
-            return redirect('polls:add_option')
+            return HttpResponseRedirect(reverse('polls:add_option', args=(event.id,)))
+            # return redirect('polls:add_option')
+            # return render(request, 'polls/addoption.html', {'event': event})
     else:
         form = CreateEventForm()
         return render(request, 'polls/new_event.html', {'form': form})
 
-def add_option(request):
+
+def add_option(request, event_id):
+    event = Event.objects.get(id=event_id)
     if request.method == 'POST':
         formset = EventOptionForm(request.POST)
         if [formset.is_valid()]:
-            event_option = formset.save()
+            event_option = formset.save(commit=False)
+            event_option.event = event
             event_option.save()
-            return redirect('polls:add_option')
+            # return redirect('polls:add_option')
+            return HttpResponseRedirect(reverse('polls:add_option', args=(event.id,)))
     else:
         formset = EventOptionForm()
-        return render(request, 'polls/addoption.html', {'formset': formset})
+        return render(request, 'polls/addoption.html', {'formset': formset, 'event': event})
+
+
+def send_email_to_participates(participate_emails, event):
+    print("in ")
+    subject = event.name
+    email_body = "Hello!\n" + event.creator.email + " has just made a new poll in AS-IS Meeting Scheduler and invited " \
+                                                    "you to vote for it.\n" + event.name + "\n" + event.description +\
+                 "\n\nVote before it closed."
+    email = EmailMessage(subject, email_body, 'asis.meetingscheduler@gmail.com', participate_emails)
+    email.send()
+    print("maybe email sent:)")
+    return
+
+
+def save_participate_to_model(participate_emails, event):
+    for participate_email in participate_emails:
+        participateIn = ParticipateIn(
+            participant_email=participate_email, event=event
+        )
+        print("Saved...")
+        participateIn.save()
+    send_email_to_participates(participate_emails, event)
+
+
+def save_participate(request, event_id):
+    event = Event.objects.get(id=event_id)
+    i = 1
+    print()
+    participate_emails = []
+    while True:
+        participate_number = 'participate' + str(i)
+        # print(participate_number)
+        # print(request.POST[participate_number])
+        if not(participate_number in request.POST):
+        #     print("yessssssss")
+        # if request.POST.get(participate_number, False):
+            print("HERE")
+            break
+        else:
+            print("in else")
+            participate_emails.append(request.POST[participate_number])
+        i = i + 1
+    save_participate_to_model(participate_emails, event)
+    return render(request, 'polls/main.html')
+
+
+def add_participate(request, event_id):
+    event = Event.objects.get(id=event_id)
+    print("IIII")
+    return render(request, 'polls/addparticipate.html', {'event': event})
 
 
 # def signup(request,template_name, next_page):

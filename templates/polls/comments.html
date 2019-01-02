@@ -30,7 +30,7 @@
         {% for comment in event_option.comment_set.all %}
             <div class="row">
                 <div class="col-xs-6">
-                    <span class="blue-text">{{ comment.commenter.email }}: </span>
+                    <span class="blue-text">{{ comment.commenter.username }}: </span>
                     <span>{{ comment.text }}</span>
                     <a href="{% url 'polls:replies' comment.id %}">(replies)</a>
                 </div>

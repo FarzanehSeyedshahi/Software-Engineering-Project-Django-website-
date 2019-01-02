@@ -68,11 +68,14 @@ class SignUpForm(forms.ModelForm):
 
 
 class EventOptionForm(forms.ModelForm):
-    date = forms.DateField(label='date', widget=forms.SelectDateWidget)
+    from_date = forms.DateField(label='from date', widget=forms.SelectDateWidget)
+    to_date = forms.DateField(label='to date', widget=forms.SelectDateWidget)
+    from_time = forms.TimeField(label='from time', widget=forms.TimeInput(format='%H:%M'))
+    to_time = forms.TimeField(label='to time', widget=forms.TimeInput(format='%H:%M'))
 
     class Meta:
         model = EventOption
-        fields = ('description', 'date')
+        fields = ('description', 'from_date', 'from_time', 'to_date', 'to_time')
 
 
 class ShowEventForm(forms.ModelForm):

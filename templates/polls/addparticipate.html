@@ -1,0 +1,35 @@
+{% extends "polls/basic.html" %}
+
+{% block extra_head %}
+    <style>
+        .element {
+          margin-bottom: 10px;
+          display: block;
+          margin: 15px;
+        }
+    </style>
+
+{% endblock %}
+
+{% block body %}
+
+    <button onclick="addNewInput()" class="element">add participate</button>
+    <form action="{% url 'polls:saveparticipate' event.id %}" method="post">{% csrf_token %}
+        <input class="element" name="participate1">{% comment %}todo{% endcomment %}
+        <span id="form"></span>
+        <input type="submit" class="element" value="add them">
+    </form>
+
+    <script>
+        var email_counter = 2;
+        function addNewInput() {
+          var input = document.createElement("input");
+          input.className = "element";
+          input.name = "participate" + email_counter;
+          document.getElementById("form").appendChild(input);
+          email_counter++;
+        }
+    </script>
+
+
+{% endblock %}

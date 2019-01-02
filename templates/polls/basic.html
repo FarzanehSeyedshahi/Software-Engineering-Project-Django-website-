@@ -40,43 +40,59 @@
 .topnav a {
   float: left;
   display: block;
-  color: black;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
-    color: whitesmoke;
+  color: whitesmoke;
 }
 .page{
     background-color: #609ab6;
 }
-{#.background-nav{#}
-{#    background-color: #79aec8;#}
-{#}#}
+
 .left-space{
     margin-left: 30px;
 }
+
+mul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+mli {
+  float: left;
+}
+
+mli:last-child {
+  border-right: none;
+}
+
+mli a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+mli a:hover:not(.active) {
+  background-color: yellow;
+}
+
+
 </style>
 
-{#<div class="container-fluid">#}
-{#    <nav class="navbar-nav-scroll background-nav">#}
-{#      <div class="container-fluid">#}
-{#        <div class="navbar-header">#}
-{#          <span class="navbar-brand">Event polling</span>#}
-{#        </div>#}
-{#        <ul class="nav navbar-nav">#}
-{#        </ul>#}
-{#      </div>#}
-{#    </nav>#}
-{#<br>#}
-{#</div>#}
-
 <div class="header">
-  <h1>Meeting Scheduler Website</h1>
+  <h1>AS-IS Meeting Scheduler Website</h1>
 </div>
 
 <div class="topnav">
-    <p class="pt-3"><strong>{{ user.username }}</strong> <a href="{% url 'logout' %}">Log out</a></p>
-  <a href={% url 'polls:main' %}>home</a>
+  <mul>
+    <mli style="float:right"><p class="pt-3" style="font-size: 24px; margin: 5px; color: black"><strong>{{ user.username }}</strong></p></mli>
+    <mli><p><a href="{% url 'logout' %}">Log out</a></p></mli>
+    <mli><a href={% url 'polls:main' %}>home</a></mli>
+  </mul>
 </div>
 
 

@@ -17,12 +17,12 @@
     <div class="row">
         {% if replies %}
             <div class="col-xs-6">
-                <span class="blue-text">{{ replies.first.commenter.email }}:</span>
+                <span class="blue-text">{{ replies.first.commenter.username }}:</span>
                 <span> {{ replies.first.replied_comment.text }}</span><br>
             </div>
         {% else %}
             <div class="col-xs-6">
-                <span class="blue-text">{{ comment.commenter.email }}: </span>
+                <span class="blue-text">{{ comment.commenter.username }}: </span>
                 <span>{{ comment.text }}</span>
             </div>
         {% endif %}
@@ -32,7 +32,7 @@
         {% for reply in replies %}
             <div class="row">
                 <div class="col-xs-6">
-                    <span class="blue-text">{{ reply.commenter.email }}:</span>
+                    <span class="blue-text">{{ reply.commenter.username }}:</span>
                     <span>{{ reply.new_comment.text }}</span>
                 </div>
             </div>
