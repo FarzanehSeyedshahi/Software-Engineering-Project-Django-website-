@@ -1,7 +1,7 @@
 {% extends "polls/basic.html"  %}
 {% block extra_head %}
     {% load static %}
-    <style>
+    <style xmlns="http://www.w3.org/1999/html">
         .bigger-line-space{
             margin: 2px 0 2px 0;
         }
@@ -24,15 +24,20 @@
 {% endblock %}
 
 {% block body %}
-<h1>{{ event.event_name }}</h1>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+{% if event.active_status%}
 <div class="align-left">
-    <form action="{% url 'polls:vote' event.id %}" method="post">
+    <form action="{% url 'polls:vote' event.id %}" method="post" style="width: 550px; padding: 10px; margin-left: 20px; border-style: outset; border-radius: 10px">
     {% csrf_token %}
 
     {% for eventoption in event.eventoption_set.all %}
-        <label class="bigger-line-space" for="eventoption{{ forloop.counter }}">{{ eventoption.description }}: </label>
-
+        <label class="bigger-line-space" for="eventoption{{ forloop.counter }}"> description: {{ eventoption.description }} </label>
+        <br>
+        <label class="bigger-line-space" for="eventoption{{ forloop.counter }}"> From: {{ eventoption.from_date }}-{{ eventoption.from_time }} </label>
+        <br>
+        <label class="bigger-line-space" for="eventoption{{ forloop.counter }}"> To: {{ eventoption.to_date }}-{{ eventoption.to_time }} </label>
+        <br>
         {% with 'Yes No Maybe' as option_list %}
 
             {% for option in option_list.split %}
@@ -45,9 +50,14 @@
 
             <br>
         {% endwith %}
+        <br>----------<br>
     {% endfor %}
 
     <input type="submit" value="Vote">
         </form>
 </div>
+{% else  %}
+    <p><strong>Event finished!</strong></p>
+{% endif %}
 {% endblock %}
+

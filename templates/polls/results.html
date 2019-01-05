@@ -2,13 +2,17 @@
 {% block body %}
 
 <h1>{{ event.name }}</h1>
- {{ event }}
 <ul>
-    {{ event }}
 {% for eventOption in event.eventoption_set.all %}
-    <li>{{ eventOption.event }} -- {{ eventOption.description }} vote{{ eventOption.yes_count|pluralize }}</li>
+    <li>{{ eventOption.event }} -- {{ eventOption.description }}
+    Yes votes: {{ eventOption.yes_count}}, No votes: {{ eventOption.no_count}}
+    , Maybe votes: {{ eventOption.maybe_count}}
+    </li>
 {% endfor %}
 </ul>
+    {% if overlap %}
+        This event option has over lap with <b>"{{ event.name }}"</b> event.
+    {% endif %}
 
-<a href="{% url 'polls:detail' event.id %}">Vote again?</a>
+
 {% endblock %}

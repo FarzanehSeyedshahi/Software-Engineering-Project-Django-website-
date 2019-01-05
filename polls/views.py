@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.urls import reverse
 from .forms import UserLoginForm,UserRegisterForm,CreateEventForm, EventOptionForm
 from django.shortcuts import render, redirect
@@ -9,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import (authenticate, get_user_model, login,logout)
 from django.http import HttpResponseRedirect
-from .models import Event,EventOption, Comment, ReplyComment, ParticipateIn
+from .models import Event,EventOption, Comment, ReplyComment, ParticipateIn, BusyDate
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -18,9 +20,12 @@ from django.core.mail import EmailMessage
 
 @login_required
 def main(request):
+    # print(even)
     # user = User()
-    # event = get_object_or_404(Event, id=1)
-    # print(event.creator.email)
+    # busy = BusyDate.objects.all()
+    # for i in busy:
+    #     print("***", i.start_time, i.user, i.name, i.day)
+    #     print("__________________")
     return render(request, 'polls/main.html')
 
 def event(request):
@@ -28,7 +33,7 @@ def event(request):
     # latest_event_list = Event.objects.order_by('name')[:15]
     # print("**", latest_event_list[0].event.name)
     context = {'events': events}
-    print(len(events))
+    # print(len(events))
     return render(request, 'polls/index.html', context)
 
 def own_event(request):
@@ -50,6 +55,7 @@ def detail(request, id):
     event = get_object_or_404(Event, pk=id)
     return render(request, 'polls/detail.html', {'event': event})
 
+
 def save_vote(choose_option, event_options, i):
     if choose_option == '1':
         event_options[i].yes_count += 1
@@ -60,19 +66,53 @@ def save_vote(choose_option, event_options, i):
     event_options[i].save()
 
 
+def has_overlap(choose_option, event_options, i, user):
+    print(choose_option, event_options[i].to_time, user)
+    print(choose_option, event_options[i].from_date, user)
+    print("&&&&&&&^^^*")
+    if choose_option != 1:
+        return False
+    else:
+        print("^#%")
+        busyDates = BusyDate.objects.filter(user=user)
+        # print(busyDates[0].start_time, busyDates.end_time)
+        for busyDate in busyDates:
+            if busyDate.day != event_options[i].from_date:
+                continue
+            if (busyDate.start_time.isoformat() < event_options[i].to_time.isoformat() and busyDate.start_time.isoformat() > event_options[i].from_time.isoformat()) or\
+                (busyDate.start_time.isoformat() < event_options[i].from_time.isoformat() and busyDate.end_time.isoformat() > event_options[i].to_time.isoformat()) or\
+                (busyDate.end_time.isoformat() > event_options[i].from_time.isoformat() and busyDate.end_time.isoformat() < event_options[i].to_time.isoformat()) or\
+                (busyDate.start_time.isoformat() > event_options[i].from_time.isoformat() and busyDate.end_time.isoformat() < event_options[i].to_time.isoformat()):
+                    return True
+        return False
+
+
 def vote(request, id):
     event = get_object_or_404(Event, pk=id)
     event_options = EventOption.objects.all().filter(event=event)
+    user = User.objects.get(username=request.user.username)
+    print("herre")
 
     all_field_empty = True
+    overlap = False
     for i in range(len(event_options)):
-        event_option_id = 'eventoption' + str(i + 1)
+        event_option_id = 'eventoption' + str(event_options[i].id)
+        print(event_option_id)
         if request.POST.get(event_option_id, False):
             all_field_empty = False
             choose_option = request.POST[event_option_id]
             save_vote(choose_option, event_options, i)
+            if has_overlap(int(choose_option), event_options, i, user):
+                overlap = True
     if not all_field_empty:
-        return HttpResponseRedirect(reverse('polls:results', args=(event.id,)))
+        # if not overlap:
+        return HttpResponseRedirect(reverse('polls:results', args=(event.id, int(overlap))))
+        # else:
+        #     return HttpResponseRedirect(reverse('polls:results', args=(event.id, 1)))
+        #     return render(request, 'polls/detail.html', {
+        #     'event': event,
+        #     'error_message': "Your choise has ",
+        # })
     else:
         return render(request, 'polls/detail.html', {
             'event': event,
@@ -134,9 +174,10 @@ def save_comment(request, comment_id):  # todo: user should handled, and url not
     return render(request, 'polls/comments.html', context)
 
 
-def results(request,id):
+def results(request,id, overlap):
+    # print(overlap)
     event = get_object_or_404(Event, pk=id)
-    return render(request, 'polls/results.html', {'event': event})
+    return render(request, 'polls/results.html', {'event': event, 'overlap': overlap})
 
 
 def new_event(request):
@@ -161,6 +202,7 @@ def create_new_event(request):
 
 def add_option(request, event_id):
     event = Event.objects.get(id=event_id)
+    print("event_id:", event_id)
     if request.method == 'POST':
         formset = EventOptionForm(request.POST)
         if [formset.is_valid()]:
@@ -174,12 +216,15 @@ def add_option(request, event_id):
         return render(request, 'polls/addoption.html', {'formset': formset, 'event': event})
 
 
-def send_email_to_participates(participate_emails, event):
+def send_email_to_participates(participate_emails, event, email_text=""):
     print("in ")
     subject = event.name
-    email_body = "Hello!\n" + event.creator.email + " has just made a new poll in AS-IS Meeting Scheduler and invited " \
-                                                    "you to vote for it.\n" + event.name + "\n" + event.description +\
-                 "\n\nVote before it closed."
+    if email_text == "":
+        email_body = "Hello!\n" + event.creator.email + " has just made a new poll in AS-IS Meeting Scheduler and invited " \
+                                                        "you to vote for it.\n" + event.name + "\n" + event.description +\
+                     "\n\nVote before it closed."
+    else:
+        email_body = email_text
     email = EmailMessage(subject, email_body, 'asis.meetingscheduler@gmail.com', participate_emails)
     email.send()
     print("maybe email sent:)")
@@ -222,6 +267,61 @@ def add_participate(request, event_id):
     event = Event.objects.get(id=event_id)
     print("IIII")
     return render(request, 'polls/addparticipate.html', {'event': event})
+
+
+def save_event_result_on_model(event, event_option):
+    event.active_status = 0
+    event.holding_date_from = event_option.from_date
+    event.holding_time_from = event_option.from_time
+    event.holding_date_to = event_option.to_date
+    event.holding_time_to = event_option.to_time
+    event.save()
+
+
+def save_busy_time_result_on_model(event, event_option):
+    participateIns = ParticipateIn.objects.filter(event=event)
+    print(":))")
+    for participateIn in participateIns:
+        user = User.objects.get(email=participateIn.participant_email)
+        event_option_date = event_option.from_date
+        while True:
+            busyDate = BusyDate(user=user, day=event_option.from_date,
+                                start_time=event_option.from_time, end_time=event_option.to_time,
+                                name=event.name
+            )
+            busyDate.save()
+            event_option_date += timedelta(days=event.repeating_day)
+            print(":D", event_option_date, event.ending_date, event.repeating_day)
+            if event_option_date.isoformat() > event.ending_date.isoformat():
+                break
+
+
+def finish_event(request, event_id):#todo:
+    print("III", request.POST['eventoption'])
+    event = get_object_or_404(Event, id=event_id)
+    event_option_id = request.POST['eventoption']
+    event_option = get_object_or_404(EventOption, id=event_option_id)
+    save_event_result_on_model(event, event_option)
+    save_busy_time_result_on_model(event, event_option)
+    return render(request, 'polls/owndetail.html', {'event': event})
+
+
+def reactive_event(request, event_id):
+    ###
+    event = get_object_or_404(Event, id=event_id)
+    print("***", event.holding_date_from, event.holding_date_to)
+    ###
+    email_text = request.POST['reactive_email'] #todo: this is email_text;
+    event = get_object_or_404(Event, id=event_id)
+    event.active_status = 1
+    event.save()
+    participate_emails = []
+    participates = ParticipateIn.objects.filter(event=event)
+    print("Here", email_text) #todo, this
+    for participate in participates:
+        participate_emails.append(participate.participant_email)
+    send_email_to_participates(participate_emails, event, email_text) #todo: Farzane zirak.
+    return render(request, 'polls/owndetail.html', {'event': event})
 
 
 # def signup(request,template_name, next_page):
@@ -281,6 +381,7 @@ def login_view(request):
     }
     return render(request, "registration/login.html", context)
 
+
 def register_view(request):
     next = request.GET.get('next')
     form = UserRegisterForm(request.POST or None)
@@ -289,7 +390,7 @@ def register_view(request):
         password = form.cleaned_data.get('password')
         user.set_password(password)
         user.save()
-        new_user = authenticate(username= user.username, password = password)
+        new_user = authenticate(username = user.username, password = password)
         login(request, new_user)
         if next:
             return redirect(next)
@@ -298,6 +399,7 @@ def register_view(request):
         'form': form,
     }
     return render(request, "registration/signup.html", context)
+
 
 def logout_view(request):
     logout(request)

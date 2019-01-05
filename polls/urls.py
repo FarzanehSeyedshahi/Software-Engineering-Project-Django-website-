@@ -16,7 +16,7 @@ urlpatterns = [
     # url('^(?P<pk>[0-9]+)/', )
     path('<int:id>/', views.detail, name='detail'), #todo:
     path('<int:event_id>/owndetail/', views.own_detail, name='owndetail'),
-    path('<int:id>/results/', views.results, name='results'),
+    path('<int:id>/<int:overlap>/results/', views.results, name='results'),
     path('<int:id>/vote/', views.vote, name='vote'),
     path('<int:option_id>/comments/', views.comments, name='comments'),
     path('<int:comment_id>/writecomment/', views.save_comment, name='writecomment'),
@@ -24,6 +24,9 @@ urlpatterns = [
     path('<int:event_id>/add_option/', views.add_option, name="add_option"),
     path('<int:event_id>/participate/', views.add_participate, name='participate'),
     path('<int:event_id>/saveparticipate/', views.save_participate, name='saveparticipate'),
+    path('<int:event_id>/finishevent/', views.finish_event, name='finishevent'),
+    path('<int:event_id>/reactiveevent/', views.reactive_event, name='reactiveevent'),
+    path('accounts/register/', views.register_view, name='register'),
     # url(r'^api-auth/', include('rest_framework.urls')),
     #path('login/', include('django.contrib.auth.urls'),name='login'),
     url(r'^signup/$', views.signup_view, name='signup'),

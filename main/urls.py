@@ -26,13 +26,9 @@ from polls.views import login_view,register_view,logout_view
 urlpatterns = [
     path('', include('polls.urls')),
     path('accounts/login/',login_view),
-    path('accounts/signup/', register_view),
+    path('accounts/register/', register_view),
     path('accounts/logout/', logout_view),
     path('accounts/', include('django.contrib.auth.urls')),
     path('polls/', include('polls.urls')),
     path('admin/', admin.site.urls),
-    #path('login/', include('django.contrib.auth.urls')),
-    #url(r'^signup/$', views.signup,{'template_name': 'registration/signup.html', 'next_page': 'registration/main.html'}, name='signup'),
-
-
 ]

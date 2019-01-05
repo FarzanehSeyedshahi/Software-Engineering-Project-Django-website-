@@ -1,3 +1,6 @@
+import datetime
+from datetime import timezone
+
 from django.contrib.auth.models import User
 from django.contrib.auth import (authenticate, get_user_model)
 from django import forms
@@ -39,24 +42,26 @@ class UserRegisterForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username','email','email2','password']
-    def clean_email(self):
+##############################################
+    def clean(self,*args,**kwargs):
         email = self.cleaned_data.get('email')
         email2 = self.cleaned_data.get('email2')
-        # if email != email2:
-        #     raise forms.ValidationError("emails must match")
+        if email != email2:
+             raise forms.ValidationError("emails must match")
         email_qs = User.objects.filter(email= email)
         if email_qs.exists():
             raise forms.ValidationError("This email was used before")
-        return email
-
-
+        return super(UserRegisterForm,self).clean(*args,**kwargs)
+##############################################
 
 
 
 class CreateEventForm(forms.ModelForm):
+    ending_date = forms.DateField(label='Ending date', widget=forms.SelectDateWidget, initial=datetime.date.today)
+
     class Meta:
         model = Event
-        fields = ('name', 'description', 'repeating_day')
+        fields = ('name', 'description', 'repeating_day', 'ending_date')
 
 
 class SignUpForm(forms.ModelForm):
@@ -68,8 +73,8 @@ class SignUpForm(forms.ModelForm):
 
 
 class EventOptionForm(forms.ModelForm):
-    from_date = forms.DateField(label='from date', widget=forms.SelectDateWidget)
-    to_date = forms.DateField(label='to date', widget=forms.SelectDateWidget)
+    from_date = forms.DateField(label='from date', widget=forms.SelectDateWidget, initial=datetime.date.today)
+    to_date = forms.DateField(label='to date', widget=forms.SelectDateWidget, initial=datetime.date.today)
     from_time = forms.TimeField(label='from time', widget=forms.TimeInput(format='%H:%M'))
     to_time = forms.TimeField(label='to time', widget=forms.TimeInput(format='%H:%M'))
 

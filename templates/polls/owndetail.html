@@ -30,32 +30,50 @@
     <h1>{{ event.event_name }}</h1>
 
     <div class="align-left">
+    {% if event.active_status == 1%}
+    <form action="{% url 'polls:finishevent' event.id %}" method="post">{% csrf_token %}
+{#    {% endif todo: %} todo: #}
+        {% for eventoption in event.eventoption_set.all %}
+            <span class="bigger-line-space" for="eventoption{{ forloop.counter }}">{{ eventoption.description }}: </span>
 
-    {% for eventoption in event.eventoption_set.all %}
-        <span class="bigger-line-space" for="eventoption{{ forloop.counter }}">{{ eventoption.description }}: </span>
+            {% with 'Yes No Maybe' as option_list %}
 
-        {% with 'Yes No Maybe' as option_list %}
-
-            {% for option in option_list.split %}
-                <span class="{{ option }} badge black-text">
-                {% if forloop.counter == 1 %}
-                    <span>{{ eventoption.yes_count }}</span>
-                {% elif forloop.counter == 2 %}
-                    <span>{{ eventoption.no_count }}</span>
-                {% else %}
-                    <span>{{ eventoption.maybe_count }}</span>
-                {% endif %}
-{#                    <span>{{ eventoption.no_count }}</span>#}
-{#                    <span>{{ eventoption.maybe_count }}</span>#}
-{#                    <input type="radio" name="eventoption{{ eventoption.id }}" id="eventoption{{ eventoption.id }}" value="{{ forloop.counter }}">#}
-                    <span for="eventoption{{ forloop.counter }}">{{ option }}</span>
+                {% for option in option_list.split %}
+                    <span class="{{ option }} badge black-text">
+                    {% if forloop.counter == 1 %}
+                        <span>{{ eventoption.yes_count }}</span>
+                    {% elif forloop.counter == 2 %}
+                        <span>{{ eventoption.no_count }}</span>
+                    {% else %}
+                        <span>{{ eventoption.maybe_count }}</span>
+                    {% endif %}
+                        <span for="eventoption{{ forloop.counter }}">{{ option }}</span>
+                    </span>
+                {% endfor %}
+                <a href="{% url 'polls:comments' eventoption.id %}">comments</a>
+                <span class="badge black-text">
+                    <input type="radio" name="eventoption" id="eventoption" value="{{ forloop.counter }}">
+                    <label for="eventoption{{ forloop.counter }}">Choose this as final option.</label>
                 </span>
-            {% endfor %}
-            <a href="{% url 'polls:comments' eventoption.id %}">comments</a>
 
-            <br>
-        {% endwith %}
-    {% endfor %}
+                <br>
+            {% endwith %}
+        {% endfor %}
+    {% endif %}
+        <br>
+        {% if event.active_status == 1%}
+            <input type="submit" value="Finish this event" class="save btn btn-default" style="margin-left: 60px; background-color: lightcoral">
+            </form>
+{#            <a href="{% url 'polls:finishevent' event.id %}" class="save btn btn-default" style="margin-left: 60px; background-color: lightcoral">Finish this event</a>#}
+        {% else %}
+        <form action="{% url 'polls:reactiveevent' event.id %}" method="post">{% csrf_token %}
+            <input type="submit" value="Reactive this event with this email text" class="save btn btn-default"style="margin-left: 60px; background-color: lightblue">
+            <textarea name="reactive_email" cols="60" rows="10">
+Hello!
+{{ event.creator.email }} has just made a new poll in AS-IS Meeting Scheduler and invited you to vote for it({{ event.name }}, {{event.description }}).Vote before it closed.</textarea>
+        </form>
+{#        <a href="{% url 'polls:reactiveevent' event.id %}" class="save btn btn-default" style="margin-left: 60px; background-color: lightblue">Reactive this event</a>#}
+        {% endif %}
 
 </div>
 
