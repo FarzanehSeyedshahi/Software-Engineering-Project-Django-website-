@@ -16,12 +16,12 @@
 
     <div class="row">
         {% if replies %}
-            <div class="col-xs-6">
+            <div class="col-xs-6" style="margin-left: 20px">
                 <span class="blue-text">{{ replies.first.commenter.username }}:</span>
                 <span> {{ replies.first.replied_comment.text }}</span><br>
             </div>
         {% else %}
-            <div class="col-xs-6">
+            <div class="col-xs-6" style="margin-left: 20px; margin-top: 10px">
                 <span class="blue-text">{{ comment.commenter.username }}: </span>
                 <span>{{ comment.text }}</span>
             </div>
@@ -44,7 +44,7 @@
     {% else %}
         <form action="{% url 'polls:replies' comment.id %}" method="post">{% csrf_token %}
     {% endif %}
-        <input class="write-comment" type="text" name="comment" placeholder="comment">
+        <input class="write-comment" type="text" name="comment" placeholder="comment" style="margin-left: 20px">
         <input type="submit" value="Comment">
     </form>
 

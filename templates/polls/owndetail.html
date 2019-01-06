@@ -27,9 +27,9 @@
 
 {% block body %}
 
-    <h1>{{ event.event_name }}</h1>
+    <h1 style="color: purple; margin-left: 30px">{{ event.name }}</h1>
 
-    <div class="align-left">
+    <div class="align-left" style="margin-left: 35px; margin-top: 20px">
     {% if event.active_status == 1%}
     <form action="{% url 'polls:finishevent' event.id %}" method="post">{% csrf_token %}
 {#    {% endif todo: %} todo: #}
@@ -64,13 +64,15 @@
         {% if event.active_status == 1%}
             <input type="submit" value="Finish this event" class="save btn btn-default" style="margin-left: 60px; background-color: lightcoral">
             </form>
-{#            <a href="{% url 'polls:finishevent' event.id %}" class="save btn btn-default" style="margin-left: 60px; background-color: lightcoral">Finish this event</a>#}
+            {#            <a href="{% url 'polls:finishevent' event.id %}" class="save btn btn-default" style="margin-left: 60px; background-color: lightcoral">Finish this event</a>#}
         {% else %}
-        <form action="{% url 'polls:reactiveevent' event.id %}" method="post">{% csrf_token %}
-            <input type="submit" value="Reactive this event with this email text" class="save btn btn-default"style="margin-left: 60px; background-color: lightblue">
+            <p>By pressing Reactive button the poll will start again and it's participants can vote again.You can change the email text if you want:</p>
+            <form action="{% url 'polls:reactiveevent' event.id %}" method="post">{% csrf_token %}
+            <input type="submit" value="Reactive" class="save btn btn-default"style="margin-left: 60px; background-color: purple; color: whitesmoke;">
             <textarea name="reactive_email" cols="60" rows="10">
 Hello!
-{{ event.creator.email }} has just made a new poll in AS-IS Meeting Scheduler and invited you to vote for it({{ event.name }}, {{event.description }}).Vote before it closed.</textarea>
+{{ event.creator.email }} has restarted "{{ event.name }}" in AS-IS Meeting Scheduler and wants you to vote it again.
+Vote before it closed.</textarea>
         </form>
 {#        <a href="{% url 'polls:reactiveevent' event.id %}" class="save btn btn-default" style="margin-left: 60px; background-color: lightblue">Reactive this event</a>#}
         {% endif %}

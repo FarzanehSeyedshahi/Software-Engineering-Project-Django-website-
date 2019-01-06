@@ -1,20 +1,48 @@
 {% extends "polls/basic.html" %}
 
 {% block body %}
+
+<style>
+iul {
+  list-style-type:disc;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+ili a {
+  list-style-type:disc;
+  display: block;
+  color: white;
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 20px;
+  margin-left: 20px;
+  margin-top: 16px;
+}
+
+ili a:hover:not(.active) {
+  color: deeppink;
+}
+
+
+</style>
+
+
 {% if events %}
-    <ul>
+    <iul>
     {% for event in events %}
          {% if event.name %}
-             <li><a href="{% url 'polls:owndetail' event.id %}" methods="post">{% comment %}{% endcomment %}
+             <ili ><a href="{% url 'polls:owndetail' event.id %}" methods="post">{% comment %}{% endcomment %}
              {{ event.name }}
          {% else %}
-             <li><a href="{% url 'polls:detail' event.event.id %}" methods="post">
+             <ili><a href="{% url 'polls:detail' event.event.id %}" methods="post">
              {{ event.event.name }}
          {% endif %}
-             </a></li>
+             </a></ili>
 {#          <li> {{ event.id  }}</li>#}
     {% endfor %}
-    </ul>
+    </iul>
 {% else %}
     <p>No polls are available.</p>
 {% endif %}

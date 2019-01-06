@@ -28,7 +28,7 @@
 
     {% if event_option.comment_set.all %}
         {% for comment in event_option.comment_set.all %}
-            <div class="row">
+            <div class="row" style="margin-left: 20px; margin-top: 10px">
                 <div class="col-xs-6">
                     <span class="blue-text">{{ comment.commenter.username }}: </span>
                     <span>{{ comment.text }}</span>
@@ -38,11 +38,11 @@
         {% endfor %}
      <br>
     {% else %}
-        <p>No Comments yet.</p>
+        <p style="margin-left: 20px; margin-top: 30px">No comments yet!</p>
     {% endif %}
 
         <form action="{% url 'polls:writecomment' event_option.id %}" method="post">{% csrf_token %}
-            <input class="write-comment" type="text" name="comment" placeholder="comment">
+            <input class="write-comment" type="text" name="comment" placeholder="comment" style="margin-left: 20px">
             <input type="submit" value="Comment">
         </form>
 

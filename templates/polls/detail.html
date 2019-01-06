@@ -27,8 +27,9 @@
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 {% if event.active_status%}
-<div class="align-left">
+<div class="align-left" style="margin: 50px">
     <form action="{% url 'polls:vote' event.id %}" method="post" style="width: 550px; padding: 10px; margin-left: 20px; border-style: outset; border-radius: 10px">
+    <h1 style="text-align: center; color: purple">{{ event.name }} <font size="3">by {{ event.creator.email }}</font></h1><br><br>
     {% csrf_token %}
 
     {% for eventoption in event.eventoption_set.all %}
