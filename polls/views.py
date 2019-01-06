@@ -26,7 +26,13 @@ def main(request):
     # for i in busy:
     #     print("***", i.start_time, i.user, i.name, i.day)
     #     print("__________________")
-    return render(request, 'polls/main.html')
+    busy_date = BusyDate.objects.filter(user=request.user)
+    for i in busy_date:
+        print(i.name, i.day)
+    print(busy_date[0].name)
+    context = {'busy_date': busy_date}
+    print(len(context))
+    return render(request, 'polls/main.html', context)
 
 def event(request):
     events = ParticipateIn.objects.filter(participant_email=request.user.email) #todo: change this name
@@ -287,7 +293,8 @@ def save_busy_time_result_on_model(event, event_option):
         user = User.objects.get(email=participateIn.participant_email)
         event_option_date = event_option.from_date
         while True:
-            busyDate = BusyDate(user=user, day=event_option.from_date,
+            print()
+            busyDate = BusyDate(user=user, day=event_option_date,
                                 start_time=event_option.from_time, end_time=event_option.to_time,
                                 name=event.name
             )

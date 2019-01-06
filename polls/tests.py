@@ -143,8 +143,7 @@ class EventModelTests(TestCase):
 
     def test_system(self):
 
-        user1 = self.create_user("test username1", "test1@test.com")
-        user2 = self.create_user("test username2", "test2@test.com")
+        user = self.create_user("test username", "test@test.com")
         creator = self.create_user("test creator username", "testcreator@test.com")
         event = self.create_event("test event", "test description", creator)
         event_option1 = self.create_EventOptions("first test event option", "2019-1-13", "11:45", "2019-1-13",

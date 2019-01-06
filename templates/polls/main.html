@@ -6,6 +6,24 @@
 
 {% block body %}
 
+<style>
+itable {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+itd, ith {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+itr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+
 <div class="container">
 
 <div class="header">
@@ -22,8 +40,29 @@
             <a class="btn btn-schedule btn-lg" href="event" style="color: darkorange; font-size: 25px" >Attending events</a><br>
             <a class="btn btn-schedule btn-lg" href="ownevent" style="color: purple; font-size: 25px">My events</a>
         </div>
+            <table align="center" style="text-align: center">
+            <tr>
+                <th style="text-align: center">Event Name</th>
+                <th style="text-align: center">Event Day</th>
+                <th style="text-align: center">  Event from time  </th>
+                <th style="text-align: center">  Event to time</th>
+            </tr>
+
+            {% for foo in busy_date %}
+                <tr>
+                    <td>{{ foo.name }}</td>
+                    <td>{{ foo.day }}</td>
+                    <td>{{ foo.start_time }}</td>
+                    <td>{{ foo.end_time }}</td>
+              </tr>
+            {% endfor %}
+
+            </table>
     </div>
 </div>
 </div>
 </div>
+
+
+
 {% endblock %}
