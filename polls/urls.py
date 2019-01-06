@@ -29,6 +29,6 @@ urlpatterns = [
     path('accounts/register/', views.register_view, name='register'),
     # url(r'^api-auth/', include('rest_framework.urls')),
     #path('login/', include('django.contrib.auth.urls'),name='login'),
-    url(r'^signup/$', views.signup_view, name='signup'),
+    #url(r'^signup/$', views.signup_view, name='signup'),
 
 ]

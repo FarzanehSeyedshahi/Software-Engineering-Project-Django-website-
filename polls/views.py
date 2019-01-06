@@ -89,9 +89,11 @@ def has_overlap(choose_option, event_options, i, user):
 
 def vote(request, id):
     event = get_object_or_404(Event, pk=id)
-    event_options = EventOption.objects.all().filter(event=event)
-    user = User.objects.get(username=request.user.username)
     print("herre")
+    event_options = EventOption.objects.all().filter(event=event)
+    print("herre")
+    print(request.user.username)
+    user = User.objects.get(username=request.user.username)
 
     all_field_empty = True
     overlap = False
@@ -364,6 +366,7 @@ def signup_view(request):
     else:
         form = UserCreationForm()
     return render(request,'registration/signup.html',{'form':form})
+
 
 def login_view(request):
     next = request.GET.get('next')
