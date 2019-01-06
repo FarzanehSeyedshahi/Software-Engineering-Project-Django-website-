@@ -9,12 +9,6 @@ from .models import EventOption
 
 User = get_user_model()
 
-# class UserForm(forms.ModelForm):
-#     password = forms.CharField(widget=forms.PasswordInput)
-#
-#     class Meta:
-#         model = User
-#         fields = ['username', 'password']
 
 class UserLoginForm(forms.Form):
     username = forms.CharField()
@@ -32,7 +26,8 @@ class UserLoginForm(forms.Form):
                 raise forms.ValidationError('Password is wrong')
             if not user.is_active:
                 raise forms.ValidationError('this User is not Active')
-            return super(UserLoginForm, self).clean( *args, **kwargs)
+            return super(UserLoginForm, self).clean(*args, **kwargs)
+
 
 class UserRegisterForm(forms.ModelForm):
     email = forms.EmailField(label='Email Adress: ')
@@ -41,8 +36,8 @@ class UserRegisterForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username','email','email2','password']
-##############################################
+        fields = ['username', 'email', 'email2', 'password']
+
     def clean(self,*args,**kwargs):
         email = self.cleaned_data.get('email')
         email2 = self.cleaned_data.get('email2')
@@ -51,8 +46,7 @@ class UserRegisterForm(forms.ModelForm):
         email_qs = User.objects.filter(email= email)
         if email_qs.exists():
             raise forms.ValidationError("This email was used before")
-        return super(UserRegisterForm,self).clean(*args,**kwargs)
-##############################################
+        return super(UserRegisterForm,self).clean(*args, **kwargs)
 
 
 
@@ -65,7 +59,6 @@ class CreateEventForm(forms.ModelForm):
 
 
 class SignUpForm(forms.ModelForm):
-    # birth_date = forms.DateField(help_text='Required. Format: YYYY-MM-DD')
 
     class Meta:
         model = User

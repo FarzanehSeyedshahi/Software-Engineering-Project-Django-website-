@@ -12,11 +12,6 @@ from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 
 
-# class User(models.Model):
-#     email = models.EmailField(primary_key = True)
-# event = models.ForeignKey(Event, on_delete=models.CASCADE)
-# time_of_authorization = models.DateTimeField(default=now)
-# event_items = models.ManyToManyField(EventOption)
 
 class Event(models.Model):
     name = models.CharField(max_length=200)
@@ -131,56 +126,8 @@ class BusyDate(models.Model):
         events = BusyDate.objects.filter(day=self.day)
         if events.exists():
             for event in events:
-                if self.check_overlap(event.start_time, event.end_time, self.start_time, self.end_time):#TODO:Send Email of overlapping@farzaneh
-                    # self.send_email_for_overlap(self.owner.email)
+                if self.check_overlap(event.start_time, event.end_time, self.start_time, self.end_time):
                     raise ValidationError(
                         'There is an overlap with another event: ' + str(event.day) + ', ' + str(
                             event.start_time) + '-' + str(event.end_time))
 
-    # def check_overlap(self, from_date, from_time, to_date, to_time):
-    #     if (self.event_from_date < from_date < self.event_to_date) or (
-    #             self.event_from_date < to_date < self.event_to_date):
-    #         if (self.event_from_time < from_time < self.event_to_time) or (
-    #                 self.event_from_time < to_time < self.event_to_time):
-    #             return True
-    #     else:
-    #         return False
-
-    # def check_overlap(self, fixed_start, fixed_end, new_start, new_end):
-    #     overlap = False
-    #     if new_start == fixed_end or new_end == fixed_start:  # edge case
-    #         overlap = False
-    #     elif (new_start >= fixed_start and new_start <= fixed_end) or (
-    #             new_end >= fixed_start and new_end <= fixed_end):  # innner limits
-    #         overlap = True
-    #     elif new_start <= fixed_start and new_end >= fixed_end:  # outter limits
-    #         overlap = True
-    #
-    #     return overlap
-
-    # def save(self, force_insert=False, force_update=False):
-    #     new_task = False
-    #     if not self.id:
-    #         new_task = True
-    #     super(BusyDate, self).save(force_insert, force_update)
-    #     # end = self.event_from_time + timedelta(minutes=24 * 60)
-    #     title = "This is test Task"
-    #     if new_task:
-    #         event = Event(start=self.event_from_time, end=self.event_to_time, title=title,
-    #                       description=self.event_name)
-    #         event.save()
-    #         rel = EventRelation.objects.create_relation(event, self)
-    #         rel.save()
-    #         try:
-    #             cal = Calendar.objects.get(pk=1)
-    #         except Calendar.DoesNotExist:
-    #             cal = Calendar(name="Community Calendar")
-    #             cal.save()
-    #         cal.events.add(event)
-    #     else:
-    #         event = Event.objects.get_for_object(self)[0]
-    #         event.start = self.event_from_time
-    #         event.end = self.event_to_time
-    #         event.title = title
-    #         event.description = self.event_name
-    #         event.save()

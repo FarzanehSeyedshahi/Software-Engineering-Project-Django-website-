@@ -65,7 +65,6 @@ class EventModelTests(TestCase):
         self.assertFalse(has_overlap(2, event_options, 0, user))
 
 
-
     def test_vote_with_one_choice(self):
         user = self.create_user("test", "test@test.com")
         creator = self.create_user("test creator username", "testcreator@test.com")
@@ -110,39 +109,7 @@ class EventModelTests(TestCase):
         mock_init.assert_called_with(event.name, mock.ANY, 'asis.meetingscheduler@gmail.com', mock.ANY)
 
 
-
-    # def test_detail_show_poll(self):
-    #     event = self.create_event("Night Meeting")
-    #     self.create_EventOptions("Sunday", event)
-    #     self.create_EventOptions("Monday", event)
-    #     response = self.client.get('/polls/1/')
-    #     self.assertContains(response, "Sunday")
-    #     self.assertNotContains(response, "Friday")
-    #     self.assertEqual(response.status_code, 200, "test_detail_show_poll, status code")
-    # # response = self.client.post(reverse('polls:index'))
-
-
-    # def test_vote_increase_one_vote(self):
-    #     event = self.create_event("Night Meeting")
-    #     self.create_EventOptions("Sunday", event)
-    #     self.create_EventOptions("Monday", event)
-    #     response = self.client.post('/polls/1/vote/', {'eventOption': 2})
-    #     # self.assertEqual(response.status_code, 302, "test_vote_increase_one_vote, status code")
-    #     # self.assertEqual(event.eventoption_set.get(pk=2).votes, 1, "test_vote_increase_one_vote, increasing")
-    #     self.assertEqual(event.eventoption_set.get(pk=1).votes, 0, "test_vote_increase_one_vote, Not changed")
-
-
-    # def test_vote_not_choose_any_option(self):
-    #     event = self.create_event("Night Meeting")
-    #     self.create_EventOptions("Sunday", event)
-    #     response = self.client.post('/polls/1/vote/', {'EventOption': '2'})
-    #     self.assertEqual(response.status_code, 200, "test_vote_not_choose_any_option, status code")
-    #     self.assertContains(response, "You didn&#39;t select a choice.")
-    #     self.assertEqual(event.eventoption_set.get(pk=1).votes, 0, "test_vote_not_choose_any_option")
-
-
-    def test_system(self):
-
+    def test_complete_scenario_of_vote(self):
         user = self.create_user("test username", "test@test.com")
         creator = self.create_user("test creator username", "testcreator@test.com")
         event = self.create_event("test event", "test description", creator)
@@ -150,20 +117,12 @@ class EventModelTests(TestCase):
                                                  "12:00", event)
         event_option2 = self.create_EventOptions("second test event option", "2019-1-13", "12:30", "2019-1-13",
                                                  "13:00", event)
+        self.client.force_login(user)
+        self.client.post('/event/')
+        self.client.post('/1/')
+        response = self.client.post('/1/vote/', {"eventoption1": 2})
 
-
-        first_meeting = self.create_event("Night Meeting")
-        self.create_EventOptions("Sunday", first_meeting)
-        self.create_EventOptions("Monday", first_meeting)
-
-        second_meeting = self.create_event("Control Meeting")
-        self.create_EventOptions("Monday", second_meeting)
-
-        third_meeting = self.create_event("Action Meeting")
-        self.create_EventOptions("today, at 6", third_meeting)
-        self.create_EventOptions("today, at 8", third_meeting)
-
-        forth_meeting = self.create_event("English Meeting")
-
-        response = self.client.get('/polls/')
-        self.assertEqual(response.status_code, 200, "test_vote_not_choose_any_option, status code")
+        self.assertEqual(response.status_code, 302, "test_complete_scenario_vote, status code")
+        self.assertEqual(event.eventoption_set.get(pk=1).no_count, 1, "test_complete_scenario_vote, no count")
+        self.assertEqual(event.eventoption_set.get(pk=1).yes_count, 0, "test_complete_scenario_vote, yes count")
+        self.assertEqual(event.eventoption_set.get(pk=1).maybe_count, 0, "test_complete_scenario_vote, maybe count")
